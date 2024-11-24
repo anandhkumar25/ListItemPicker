@@ -37,10 +37,17 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+    implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Android Studio Preview support
+    debugImplementation (libs.ui.tooling)
+    implementation (libs.ui)
+    implementation (libs.androidx.activity.compose.v192)
+    implementation (libs.androidx.foundation)
+    implementation (libs.androidx.animation)
 }
 
 publishing {
