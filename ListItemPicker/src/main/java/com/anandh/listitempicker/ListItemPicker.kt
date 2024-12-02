@@ -6,6 +6,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -50,15 +52,14 @@ fun <T> ListItemPicker(
     list: List<T>,
     textStyle: TextStyle?,
 ) {
-    val modifierOrDefault = modifier ?: Modifier
     val labelOrDefault = label ?: { it: T -> it.toString() }
     val textStyleOrDefault = textStyle ?: TextStyle.Default
     ListPicker(
-        modifier = modifierOrDefault,
-        initialValue = value,
+        modifier = modifier,
+        initialSelectedItem = value,
         itemList = list,
         label = labelOrDefault,
-        onValueChange = onValueChange,
+        onItemChange = onValueChange,
         textStyle = textStyleOrDefault,
         dividersColor = dividersColor
     )
@@ -74,15 +75,15 @@ fun calculateIntervals(coercedOutOfBoundsPageCount: Int, listSize: Int): List<In
 }
 
 
-@OptIn(ExperimentalStdlibApi::class)
+
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun <T> ListPicker(
-    initialValue: T,
-    itemList: List<T>,
     modifier: Modifier,
+    initialSelectedItem: T,
+    itemList: List<T>,
     label: T.() -> String = { toString() },
-    onValueChange: (T) -> Unit,
+    onItemChange: (T) -> Unit,
     outOfBoundsPageCount: Int = 1,
     textStyle: TextStyle = LocalTextStyle.current,
     verticalPadding: Dp = 8.dp,
@@ -98,7 +99,7 @@ fun <T> ListPicker(
     val intervals = calculateIntervals(coercedOutOfBoundsPageCount, listSize)
 
     // Using lazy list state to manage scrolling
-    val initialIndex = itemList.indexOf(initialValue).coerceIn(0, itemList.lastIndex)
+    val initialIndex = itemList.indexOf(initialSelectedItem).coerceIn(0, itemList.lastIndex)
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
 
     // Side effect to manage initial scroll position
@@ -108,7 +109,7 @@ fun <T> ListPicker(
     // Observe the first visible item index and trigger onValueChange
     LaunchedEffect(key1 = itemList) {
         snapshotFlow { listState.firstVisibleItemIndex }.collectLatest {
-            onValueChange(itemList[it % listSize])
+            onItemChange(itemList[it % listSize])
         }
     }
 
@@ -129,6 +130,8 @@ fun <T> ListPicker(
                 state = listState,
                 flingBehavior = rememberSnapFlingBehavior(lazyListState = listState),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                contentPadding = PaddingValues(vertical = itemHeight / 4),
                 modifier = modifier
                     .height(itemHeight * visibleItemsCount)
                     .fadingEdge(
