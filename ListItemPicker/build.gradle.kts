@@ -1,9 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    //id("maven-publish")
+    id("maven-publish")
 }
 
 android {
@@ -59,15 +57,15 @@ dependencies {
     implementation ("androidx.compose.ui:ui-util:1.7.5")
 }
 
-//publishing {
-//    publications {
-//        register<MavenPublication>("release") {
-//            afterEvaluate {
-//                from(components["release"])
-//                groupId = "com.github.anandhkumar25"
-//                artifactId = "listitempicker-compose"
-//                version = "1.0.0"
-//            }
-//        }
-//    }
-//}
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            afterEvaluate {
+                from(components["release"])
+                groupId = "com.github.anandhkumar25"
+                artifactId = "listitempicker-compose"
+                version = "1.0.0"
+            }
+        }
+    }
+}
