@@ -42,26 +42,39 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun <T> ListItemPicker(
-    modifier: Modifier = Modifier,
-    label: (T) -> String = { it.toString() },
+    modifier: Modifier,
+    label: ((T) -> String)? = null,
     value: T,
     onValueChange: (T) -> Unit,
-    dividersColor: Color = MaterialTheme.colorScheme.primary,
+    dividersColor: Color = Color.Gray,
     list: List<T>,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle?,
 ) {
+    val modifierOrDefault = modifier ?: Modifier
+    val labelOrDefault = label ?: { it: T -> it.toString() }
+    val textStyleOrDefault = textStyle ?: TextStyle.Default
     ListPicker(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifierOrDefault,
         initialValue = value,
         itemList = list,
-        label = label,
+        label = labelOrDefault,
         onValueChange = onValueChange,
-        textStyle = textStyle,
+        textStyle = textStyleOrDefault,
         dividersColor = dividersColor
     )
 }
 
+fun calculateIntervals(coercedOutOfBoundsPageCount: Int, listSize: Int): List<Int> {
+    return listOf(
+        0,
+        coercedOutOfBoundsPageCount,
+        coercedOutOfBoundsPageCount + 1 * listSize,
+        coercedOutOfBoundsPageCount + 1 * listSize + coercedOutOfBoundsPageCount,
+    )
+}
 
+
+@OptIn(ExperimentalStdlibApi::class)
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun <T> ListPicker(
@@ -82,15 +95,7 @@ fun <T> ListPicker(
     val visibleItemsCount = 1 + coercedOutOfBoundsPageCount * 2
 
     // Define intervals for items
-    val intervals =
-        remember(key1 = coercedOutOfBoundsPageCount, key2 = 1, key3 = listSize) {
-            listOf(
-                0,
-                coercedOutOfBoundsPageCount,
-                coercedOutOfBoundsPageCount + 1 * listSize,
-                coercedOutOfBoundsPageCount + 1 * listSize + coercedOutOfBoundsPageCount,
-            )
-        }
+    val intervals = calculateIntervals(coercedOutOfBoundsPageCount, listSize)
 
     // Using lazy list state to manage scrolling
     val initialIndex = itemList.indexOf(initialValue).coerceIn(0, itemList.lastIndex)
