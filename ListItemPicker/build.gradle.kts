@@ -25,36 +25,35 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion ="1.5.15"
+        kotlinCompilerExtensionVersion = "1.7.5"
     }
     kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += listOf("-Xuse-ir", "-Xdump-platform-specific-var-lowering-errors")
+        jvmTarget = "17"
+        //freeCompilerArgs += listOf("-Xuse-ir", "-Xdump-platform-specific-var-lowering-errors")
     }
 }
 
 dependencies {
-    implementation ("androidx.compose.ui:ui:1.7.5")
-    implementation ("androidx.compose.material3:material3:1.3.1") // Make sure the version matches your Material3 setup
-    implementation ("androidx.compose.ui:ui-tooling:1.7.5")
+    implementation("androidx.compose.ui:ui:1.7.5")
+    implementation("androidx.compose.material3:material3:1.3.1") // Make sure the version matches your Material3 setup
+    implementation("androidx.compose.ui:ui-tooling:1.7.5")
 
-    implementation ("androidx.compose.animation:animation:1.7.5")
+    implementation("androidx.compose.animation:animation:1.7.5")
 
-    implementation ("androidx.compose.foundation:foundation:1.2.0")
+    implementation("androidx.compose.foundation:foundation:1.7.5")
 
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.5")
 
-    implementation ("androidx.compose.runtime:runtime:1.7.5")
+    implementation("androidx.compose.runtime:runtime:1.7.5")
 
-    implementation ("androidx.compose.ui:ui:1.7.5")
-    implementation ("androidx.compose.ui:ui-util:1.7.5")
+    implementation("androidx.compose.ui:ui-util:1.7.5")
 }
 
 publishing {
