@@ -27,17 +27,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var selectedItem = remember { mutableStateOf(items.first()) }
+            var selectedItem by remember { mutableStateOf(items.first()) }
             ListItemPickerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ListItemPicker(
                         modifier = Modifier.padding(innerPadding),
-                        label = { it.toString() },
-                        value = selectedItem,
-                        onValueChange = { selectedItem.value = it.toString() },
-                        dividersColor = Color.Gray,
-                        list = items,
-                        textStyle = TextStyle.Default
+                        itemFormatter = { it },
+                        selectedItem = selectedItem,
+                        onSelectionChange = { selectedItem = it },
+                        separatorColor = Color.Gray,
+                        items = items,
+                        itemTextStyle = TextStyle.Default
                     )
                 }
             }

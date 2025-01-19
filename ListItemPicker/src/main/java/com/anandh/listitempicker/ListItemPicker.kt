@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -45,23 +46,27 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun <T> ListItemPicker(
     modifier: Modifier,
-    label: ((T) -> String)? = null,
-    value: T,
-    onValueChange: (T) -> Unit,
-    dividersColor: Color = Color.Gray,
-    list: List<T>,
-    textStyle: TextStyle?,
+    itemFormatter: ((T) -> String)? = null,
+    selectedItem: T,
+    onSelectionChange: (T) -> Unit,
+    separatorColor: Color = Color.Gray,
+    items: List<T>,
+    itemTextStyle: TextStyle?,
+    itemVerticalPadding: Dp = 8.dp,
+    separatorThickness: Dp = 1.dp
 ) {
-    val labelOrDefault = label ?: { it: T -> it.toString() }
-    val textStyleOrDefault = textStyle ?: TextStyle.Default
+    val labelOrDefault = itemFormatter ?: { it: T -> it.toString() }
+    val textStyleOrDefault = itemTextStyle ?: TextStyle.Default
     ListPicker(
         modifier = modifier,
-        initialSelectedItem = value,
-        itemList = list,
+        initialSelectedItem = selectedItem,
+        itemList = items,
         label = labelOrDefault,
-        onItemChange = onValueChange,
+        onItemChange = onSelectionChange,
         textStyle = textStyleOrDefault,
-        dividersColor = dividersColor
+        dividersColor = separatorColor,
+        verticalPadding = itemVerticalPadding,
+        dividerThickness = separatorThickness
     )
 }
 
@@ -148,7 +153,7 @@ fun <T> ListPicker(
                     count = intervals.last(),
                     key = { it },
                 ) { index ->
-                    val textModifier = Modifier.padding(vertical = verticalPadding)
+                    val textModifier = Modifier.padding(vertical = verticalPadding).fillMaxWidth()
                     when (index) {
                         in intervals[0]..<intervals[1] -> {
                             Text(
@@ -157,6 +162,7 @@ fun <T> ListPicker(
                                 overflow = TextOverflow.Ellipsis,
                                 style = textStyle,
                                 modifier = textModifier,
+                                textAlign = TextAlign.Center
                             )
                         }
 
@@ -169,7 +175,8 @@ fun <T> ListPicker(
                                 modifier = Modifier.padding(
                                     horizontal = 16.dp,
                                     vertical = verticalPadding
-                                ),
+                                ).fillMaxWidth(),
+                                textAlign = TextAlign.Center
                             )
                         }
 
@@ -180,6 +187,7 @@ fun <T> ListPicker(
                                 overflow = TextOverflow.Ellipsis,
                                 style = textStyle,
                                 modifier = textModifier,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
