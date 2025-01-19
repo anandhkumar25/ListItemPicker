@@ -1,6 +1,8 @@
 package com.anandh.listitempicker
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -19,6 +21,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -32,6 +35,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -107,6 +111,16 @@ fun <T> ListPicker(
     val initialIndex = itemList.indexOf(initialSelectedItem).coerceIn(0, itemList.lastIndex)
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
 
+    // Add these near the start of the function
+    val context = LocalContext.current
+    val mediaPlayer = remember { createMediaPlayer(context) }
+
+    // Cleanup media player when the composable is disposed
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release()
+        }
+    }
     // Side effect to manage initial scroll position
     LaunchedEffect(initialIndex) {
         listState.scrollToItem(initialIndex, 0)
@@ -114,6 +128,8 @@ fun <T> ListPicker(
     // Observe the first visible item index and trigger onValueChange
     LaunchedEffect(key1 = itemList) {
         snapshotFlow { listState.firstVisibleItemIndex }.collectLatest {
+            // Play tick sound when scroll settles
+            mediaPlayer?.start()
             onItemChange(itemList[it % listSize])
         }
     }
@@ -214,6 +230,17 @@ fun <T> ListPicker(
                 color = effectiveDividerColor
             )
         }
+    }
+}
+
+private fun createMediaPlayer(context: Context): MediaPlayer? {
+    return try {
+        MediaPlayer.create(context, R.raw.scroll_tik)?.apply {
+            setVolume(0.5f, 0.5f)
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }
 
