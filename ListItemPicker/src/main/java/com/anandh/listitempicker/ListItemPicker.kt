@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -55,7 +56,7 @@ fun <T> ListItemPicker(
     onSelectionChange: (T) -> Unit,
     separatorColor: Color = Color.Gray,
     items: List<T>,
-    itemTextStyle: TextStyle?,
+    itemTextStyle: TextStyle,
     itemVerticalPadding: Dp = 8.dp,
     separatorThickness: Dp = 1.dp
 ) {
@@ -82,7 +83,6 @@ fun calculateIntervals(coercedOutOfBoundsPageCount: Int, listSize: Int): List<In
         coercedOutOfBoundsPageCount + 1 * listSize + coercedOutOfBoundsPageCount,
     )
 }
-
 
 
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
@@ -156,7 +156,10 @@ fun <T> ListPicker(
         ) {
             LazyColumn(
                 state = listState,
-                flingBehavior = rememberSnapFlingBehavior(lazyListState = listState),
+                //flingBehavior = rememberSnapFlingBehavior(lazyListState = listState),
+                flingBehavior = rememberSnapFlingBehavior(
+                    lazyListState = listState, snapPosition = SnapPosition.Center
+                ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 contentPadding = PaddingValues(vertical = itemHeight / 4),
@@ -166,19 +169,19 @@ fun <T> ListPicker(
                         brush = remember {
                             Brush.verticalGradient(
                                 0F to Color.Transparent,
-                                0.5F to Color.Black,
+                                0.5F to textStyle.color,
                                 1F to Color.Transparent
                             )
                         },
                     ),
             ) {
-                items(
-                    count = intervals.last(),
-                    key = { it },
-                ) { index ->
-                    val textModifier = Modifier.padding(vertical = verticalPadding).fillMaxWidth()
+                items(count = intervals.last(), key = { it }) { index ->
+                    val textModifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = verticalPadding)
+                        .fillMaxWidth()
+
                     when (index) {
-                        in intervals[0]..<intervals[1] -> {
+                        in intervals[0]..<intervals[1], in intervals[2]..<intervals[3] -> {
                             Text(
                                 text = "",
                                 maxLines = 1,
@@ -195,21 +198,7 @@ fun <T> ListPicker(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 style = textStyle,
-                                modifier = Modifier.padding(
-                                    horizontal = 16.dp,
-                                    vertical = verticalPadding
-                                ).fillMaxWidth(),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        in intervals[2]..<intervals[3] -> {
-                            Text(
-                                text = "",
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = textStyle,
-                                modifier = textModifier,
+                                modifier = textModifier,  // Use same modifier as empty text
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -224,17 +213,17 @@ fun <T> ListPicker(
             HorizontalDivider(
                 modifier = modifier
                     .fillMaxWidth()
-                    .offset(y = itemHeight * coercedOutOfBoundsPageCount - dividerThickness / 2),
-                thickness = dividerThickness,
-                color = effectiveDividerColor
+                    .offset(
+                        y = (itemHeight * coercedOutOfBoundsPageCount) + (verticalPadding / 2) - (dividerThickness / 2)
+                    ), thickness = dividerThickness, color = effectiveDividerColor
             )
 
             HorizontalDivider(
                 modifier = modifier
                     .fillMaxWidth()
-                    .offset(y = itemHeight * (coercedOutOfBoundsPageCount + 1) - dividerThickness / 2),
-                thickness = dividerThickness,
-                color = effectiveDividerColor
+                    .offset(
+                        y = (itemHeight * (coercedOutOfBoundsPageCount + 1)) + (verticalPadding / 2) - (dividerThickness / 2)
+                    ), thickness = dividerThickness, color = effectiveDividerColor
             )
         }
     }

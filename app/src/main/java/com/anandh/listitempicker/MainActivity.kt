@@ -21,7 +21,7 @@ import com.anandh.listitempicker.ui.theme.ListItemPickerTheme
 
 class MainActivity : ComponentActivity() {
 
-    val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 1", "Item 2", "Item 3", "Item 4")
+    val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                         onSelectionChange = { selectedItem = it },
                         separatorColor = Color.Gray,
                         items = items,
-                        itemTextStyle = TextStyle.Default
+                        itemTextStyle = TextStyle(color = Color.White)
                     )
                 }
             }
