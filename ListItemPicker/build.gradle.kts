@@ -32,7 +32,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.7.5"
+        kotlinCompilerExtensionVersion = libs.versions.compiler.get()//"1.7.5"
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -41,19 +41,25 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.ui:ui:1.7.5")
-    implementation("androidx.compose.material3:material3:1.3.1") // Make sure the version matches your Material3 setup
-    implementation("androidx.compose.ui:ui-tooling:1.7.5")
 
-    implementation("androidx.compose.animation:animation:1.7.5")
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.material3)
 
-    implementation("androidx.compose.foundation:foundation:1.7.5")
+    implementation(libs.ui)
+    implementation(libs.material3) // Make sure the version matches your Material3 setup
+    implementation(libs.ui.tooling)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.5")
+    implementation(libs.androidx.animation)
 
-    implementation("androidx.compose.runtime:runtime:1.7.5")
+    implementation(libs.androidx.foundation)
 
-    implementation("androidx.compose.ui:ui-util:1.7.5")
+    implementation(libs.kotlinx.coroutines.core)
+
+    implementation(libs.androidx.runtime)
+
+    implementation(libs.androidx.ui.util)
 }
 
 publishing {
