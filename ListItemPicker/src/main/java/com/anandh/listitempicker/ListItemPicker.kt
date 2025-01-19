@@ -127,10 +127,17 @@ fun <T> ListPicker(
     }
     // Observe the first visible item index and trigger onValueChange
     LaunchedEffect(key1 = itemList) {
-        snapshotFlow { listState.firstVisibleItemIndex }.collectLatest {
+        var previousIndex = listState.firstVisibleItemIndex
+        snapshotFlow { listState.firstVisibleItemIndex }.collectLatest { currentIndex ->
             // Play tick sound when scroll settles
-            mediaPlayer?.start()
-            onItemChange(itemList[it % listSize])
+            if (previousIndex != currentIndex) {
+                mediaPlayer?.apply {
+                    seekTo(0) // Reset to beginning
+                    start()
+                }
+                onItemChange(itemList[currentIndex % listSize])
+                previousIndex = currentIndex
+            }
         }
     }
 
@@ -235,7 +242,7 @@ fun <T> ListPicker(
 
 private fun createMediaPlayer(context: Context): MediaPlayer? {
     return try {
-        MediaPlayer.create(context, R.raw.scroll_tik)?.apply {
+        MediaPlayer.create(context, R.raw.scroll_sound)?.apply {
             setVolume(0.5f, 0.5f)
         }
     } catch (e: Exception) {
