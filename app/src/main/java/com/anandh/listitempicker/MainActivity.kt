@@ -37,7 +37,9 @@ class MainActivity : ComponentActivity() {
                         onSelectionChange = { selectedItem = it },
                         separatorColor = Color.Gray,
                         items = items,
-                        itemTextStyle = TextStyle(color = Color.White)
+                        itemTextStyle = TextStyle(color = Color.White),
+                        enableSound = true,
+                        enableHaptic = true
                     )
                 }
             }

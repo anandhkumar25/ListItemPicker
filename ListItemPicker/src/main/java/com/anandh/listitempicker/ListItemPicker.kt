@@ -60,7 +60,9 @@ fun <T> ListItemPicker(
     items: List<T>,
     itemTextStyle: TextStyle,
     itemVerticalPadding: Dp = 8.dp,
-    separatorThickness: Dp = 1.dp
+    separatorThickness: Dp = 1.dp,
+    enableSound: Boolean = true,
+    enableHaptic: Boolean = true
 ) {
     val labelOrDefault = itemFormatter ?: { it: T -> it.toString() }
     val textStyleOrDefault = itemTextStyle ?: TextStyle.Default
@@ -73,7 +75,9 @@ fun <T> ListItemPicker(
         textStyle = textStyleOrDefault,
         dividersColor = separatorColor,
         verticalPadding = itemVerticalPadding,
-        dividerThickness = separatorThickness
+        dividerThickness = separatorThickness,
+        enableSound = enableSound,
+        enableHaptic = enableHaptic
     )
 }
 
@@ -99,7 +103,9 @@ fun <T> ListPicker(
     textStyle: TextStyle = LocalTextStyle.current,
     verticalPadding: Dp = 8.dp,
     dividersColor: Color = MaterialTheme.colorScheme.primary,
-    dividerThickness: Dp = 1.dp
+    dividerThickness: Dp = 1.dp,
+    enableSound: Boolean,
+    enableHaptic: Boolean
 ) {
 
     val listSize = itemList.size
@@ -134,11 +140,15 @@ fun <T> ListPicker(
         snapshotFlow { listState.firstVisibleItemIndex }.collectLatest { currentIndex ->
             // Play tick sound when scroll settles
             if (previousIndex != currentIndex) {
-                mediaPlayer?.apply {
-                    seekTo(0) // Reset to beginning
-                    start()
+                if (enableSound) {
+                    mediaPlayer?.apply {
+                        seekTo(0)
+                        start()
+                    }
                 }
-                view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                if (enableHaptic) {
+                    view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                }
                 onItemChange(itemList[currentIndex % listSize])
                 previousIndex = currentIndex
             }
