@@ -3,6 +3,7 @@ package com.anandh.listitempicker
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaPlayer
+import android.view.HapticFeedbackConstants
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -113,6 +115,7 @@ fun <T> ListPicker(
 
     // Add these near the start of the function
     val context = LocalContext.current
+    val view = LocalView.current
     val mediaPlayer = remember { createMediaPlayer(context) }
 
     // Cleanup media player when the composable is disposed
@@ -135,6 +138,7 @@ fun <T> ListPicker(
                     seekTo(0) // Reset to beginning
                     start()
                 }
+                view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
                 onItemChange(itemList[currentIndex % listSize])
                 previousIndex = currentIndex
             }
@@ -156,7 +160,6 @@ fun <T> ListPicker(
         ) {
             LazyColumn(
                 state = listState,
-                //flingBehavior = rememberSnapFlingBehavior(lazyListState = listState),
                 flingBehavior = rememberSnapFlingBehavior(
                     lazyListState = listState, snapPosition = SnapPosition.Center
                 ),
